@@ -2,7 +2,8 @@
 
 This program follows: https://learnopengl.com/Getting-started/Hello-Triangle
 
-The full code may be compared: https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.1.hello_triangle/hello_triangle.cpp
+Compare it against the C++ implementation:
+https://learnopengl.com/code_viewer_gh.php?code=src/1.getting_started/2.1.hello_triangle/hello_triangle.cpp
 
 Other useful resources include:
 - https://paroj.github.io/gltut/Basics/Tut01%20Following%20the%20Data.html
@@ -192,7 +193,6 @@ class GLWidget(QtWidgets.QOpenGLWidget):
 
         # OpenGL is now available.  Grab and display its info.
         print(self.getGlInfo(), flush=True)
-        # self.context().aboutToBeDestroyed.connect(self.clean_up_gl)
 
         # There are several ways to interact with OpenGL:
         #
@@ -229,33 +229,32 @@ class GLWidget(QtWidgets.QOpenGLWidget):
         # must exist.  The QOpenGLWidget.initializeGL() method
         # automatically creates a context for the window containing
         # this widget. The QtGui.QOpenGLWidget.context().surface() is
-        # an PySide2.QtGui.QOffscreenSurface object.  This is a
-        # primary difference between the QOpenGLWidget and the legacy
+        # a PySide2.QtGui.QOffscreenSurface object.  This is a primary
+        # difference between the QOpenGLWidget and the legacy
         # QGLWidget.
 
         # Here, the shaders are defined only within the scope of
         # initialization.  Remember that the shaders actually exist on
         # the GPU and that the objects here are merely the interface.
         # Therefore, these objects do not need an extended lifetime
-        # beyond their immediate use.
+        # beyond their immediate use (i.e. no need for 'self').
         vertex_shader = QtGui.QOpenGLShader(QtGui.QOpenGLShader.Vertex)
         is_compiled = vertex_shader.compileSourceCode(self.vertex_shader_code)
         if not is_compiled:
-            raise ValueError("Shader did not compile:\n {0}".format(self.vertex_shader_code))
+            raise ValueError("Vertex shader did not compile:\n {0}".format(self.vertex_shader_code))
 
         fragment_shader = QtGui.QOpenGLShader(QtGui.QOpenGLShader.Fragment)
         is_compiled = fragment_shader.compileSourceCode(self.fragment_shader_code)
         if not is_compiled:
-            raise ValueError("Shader did not compile:\n {0}".format(self.fragment_shader_code))
+            raise ValueError("Fragment shader did not compile:\n {0}".format(self.fragment_shader_code))
 
-        # The vertex and fragment shader are linked into a single
-        # program.  This program is called whenever rendering objects.
+        # The vertex and fragment shaders are linked into a single
+        # program.  This program is called whenever rendering occurs.
         # Rendering is the process of converting higher dimension data
         # representations into the 2D images displayed on-screen
-        # (i.e. the shader pipeline).  Since rendering happens
-        # whenever the object is redrawn (e.g. window resize), the
-        # program should be stored in an attribute for future
-        # reference.
+        # (i.e. the shader pipeline).  Rendering happens whenever the
+        # object is redrawn (e.g. window resize), so the program
+        # should be stored in an attribute for future reference.
         self.program = QtGui.QOpenGLShaderProgram()
         self.program.addShader(vertex_shader)
         self.program.addShader(fragment_shader)
@@ -341,14 +340,6 @@ class GLWidget(QtWidgets.QOpenGLWidget):
 
         self.program.release()
         self.vao_binder.release()
-
-    def clean_up_gl(self):
-        # never called?
-        print('clean_up_gl', flush=True)
-        self.vbo.destroy()
-        self.vao.destroy()
-        del self.program
-        self.program = None
 
 
 class MainWindow(QtWidgets.QMainWindow):
